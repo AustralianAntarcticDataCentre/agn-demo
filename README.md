@@ -1,7 +1,10 @@
 # antanym-demo
-Demonstrations of the antanym R package
+Map demonstrations of the [antanym R package](https://github.com/AustralianAntarcticDataCentre/antanym).
 
 
-- [Leaflet](leaflet.html)
+- A [simple leaflet app](leaflet.html) using Mercator projection and clustered markers for place names.
+
+- Leaflet using [polar stereographic projection](leafletps.html).
+
 
 
