@@ -7,31 +7,31 @@ Map demonstrations of the [antanym R package](https://github.com/AustralianAntar
 
 Source code:
 
-```{r eval=FALSE}
+```{r eval = FALSE}
 library(antanym)
 library(leaflet)
 g <- an_read()
 
 ## find single name per feature, preferring United Kingdom
 ##  names where available, and only rows with valid locations
-temp <- g %>% an_preferred("United Kingdom")
-temp <- temp[!is.na(temp$longitude) & !is.na(temp$latitude),]
+g <- an_preferred(g, origin = "United Kingdom")
+g <- g[!is.na(g$longitude) & !is.na(g$latitude), ]
 
 ## replace NAs with empty strings in narrative
-temp$narrative[is.na(temp$narrative)] <- ""
+g$narrative[is.na(g$narrative)] <- ""
 
 ## formatted popup HTML
 popup <- sprintf("<h1>%s</h1><p><strong>Country of origin:</strong> %s<br />
   <strong>Longitude:</strong> %g<br /><strong>Latitude:</strong> %g<br />
   <a href=\"https://data.aad.gov.au/aadc/gaz/scar/display_name.cfm?gaz_id=%d\">
-    Link to SCAR gazetteer</a></p>",temp$place_name,temp$country_name,
-  temp$longitude,temp$latitude,temp$gaz_id)
+    Link to SCAR gazetteer</a></p>", g$place_name, g$origin,
+    g$longitude, g$latitude, g$gaz_id)
 
 m <- leaflet() %>%
   addProviderTiles("Esri.WorldImagery") %>%
-  addMarkers(lng = temp$longitude, lat = temp$latitude, group = "placenames",
-    clusterOptions = markerClusterOptions(),popup = popup,
-    label = temp$place_name)
+  addMarkers(lng = g$longitude, lat = g$latitude, group = "placenames",
+    clusterOptions = markerClusterOptions(), popup = popup,
+    label = g$place_name)
 ```
 
 
@@ -41,7 +41,7 @@ m <- leaflet() %>%
 
 Source code (note that the leaflet package here must be the rstudio version; use `devtools::install_github("rstudio/leaflet")`):
 
-```{r eval=FALSE}
+```{r eval = FALSE}
 startZoom <- 1
 
 crsAntartica <-  leafletCRS(
@@ -55,8 +55,8 @@ crsAntartica <-  leafletCRS(
 
 mps <- leaflet(options = leafletOptions(crs = crsAntartica, minZoom = 0, worldCopyJump = FALSE)) %>%
     setView(0, -90, startZoom) %>%
-    addCircleMarkers(lng = temp$longitude, lat = temp$latitude, group = "placenames",
-                     popup = popup, label = temp$place_name,
+    addCircleMarkers(lng = g$longitude, lat = g$latitude, group = "placenames",
+                     popup = popup, label = g$place_name,
                      fillOpacity = 0.5, radius = 8, stroke = FALSE, color = "#000",
 					 labelOptions = labelOptions(textOnly = FALSE)) %>%
     addWMSTiles(baseUrl = "https://maps.environments.aq/mapcache/antarc/?",
@@ -65,4 +65,3 @@ mps <- leaflet(options = leafletOptions(crs = crsAntartica, minZoom = 0, worldCo
                 attribution = "Background imagery courtesy <a href='http://www.environments.aq/'>environments.aq</a>") %>%
     addGraticule()
 ```
-
